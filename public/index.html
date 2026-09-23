@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MYTEL FTTH DATA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+
+  <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6">
+
+    <div class="border-b pb-4 mb-6 text-center">
+      <p class="text-xs text-gray-500 font-semibold tracking-wide uppercase">Developed by Min Khant Zaw</p>
+      <h1 class="text-2xl font-bold text-blue-900 mt-1">MYTEL FTTH DATA</h1>
+      <h2 class="text-sm text-gray-600">Account / Station / VMY Search</h2>
+    </div>
+
+    <!-- Search + Add -->
+    <div class="flex flex-col sm:flex-row gap-2 mb-6">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Enter Account, Station Code, VMY Code or Phone..."
+        class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        onkeypress="if(event.key === 'Enter') handleSearch()"
+      />
+      <div class="flex gap-2">
+        <button onclick="handleSearch()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg transition">
+          🔍 Search
+        </button>
+        <button onclick="showAddForm()" class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition">
+          + Add
+        </button>
+      </div>
+    </div>
+
+    <div id="statusMessage" class="text-sm text-gray-500 mb-4 hidden"></div>
+
+    <!-- Results table -->
+    <div id="tableContainer" class="overflow-x-auto mb-6 hidden">
+      <table class="w-full text-sm text-left text-gray-700 border">
+        <thead class="bg-gray-800 text-white uppercase text-xs">
+          <tr>
+            <th class="py-2 px-3">No</th>
+            <th class="py-2 px-3">Account</th>
+            <th class="py-2 px-3">Subscriber</th>
+            <th class="py-2 px-3">Branch</th>
+            <th class="py-2 px-3">Partner</th>
+            <th class="py-2 px-3 text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Detail card -->
+    <div id="detailCard" class="bg-blue-50 border border-blue-200 rounded-lg p-5 hidden">
+      <div class="flex justify-between items-center border-b border-blue-200 pb-2 mb-4">
+        <h3 class="text-lg font-bold text-blue-900">Subscriber Details</h3>
+        <div class="flex gap-2">
+          <button onclick="editCurrent()" class="text-xs bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded font-medium">Edit</button>
+          <button onclick="deleteCurrent()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-medium">Delete</button>
+        </div>
+      </div>
+      <div id="detailContent" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"></div>
+    </div>
+
+    <!-- Add / Edit form -->
+    <div id="formCard" class="bg-gray-50 border border-gray-200 rounded-lg p-5 mt-6 hidden">
+      <h3 id="formTitle" class="text-lg font-bold text-gray-800 border-b pb-2 mb-4">Add Subscriber</h3>
+      <form id="customerForm" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm" onsubmit="saveCustomer(event)">
+        <input type="hidden" id="f_id" />
+        <label class="flex flex-col">Account*<input required id="f_account" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Subscriber Name<input id="f_subscriberName" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Phone Number<input id="f_customerPhone" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Station Code<input id="f_stationCode" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">VMY Code<input id="f_vmyCode" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Branch<input id="f_branch" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Partner Name<input id="f_partnerName" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Device Code<input id="f_deviceCode" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Port on Card<input id="f_portOnCard" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Port Splitter<input id="f_portSplitter" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Subscriber Node<input id="f_subscriberNode" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Cable Length (m)<input type="number" id="f_cableLength" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">ONT Serial<input id="f_ontSerial" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Technician Name<input id="f_technicianName" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Technician Phone<input id="f_technicianPhone" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col">Department<input id="f_department" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col md:col-span-2">Address<input id="f_address" class="border rounded px-2 py-1"></label>
+        <label class="flex flex-col md:col-span-2">Lat, Long (e.g. 16.84, 96.17)<input id="f_latLong" class="border rounded px-2 py-1"></label>
+
+        <div class="md:col-span-2 flex gap-2 justify-end mt-2">
+          <button type="button" onclick="hideForm()" class="px-4 py-2 rounded-lg border">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium">Save</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <script>
+    const API_BASE = '/api/customers';
+    let searchResultsData = [];
+    let currentItem = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    function setStatus(text) {
+      const el = $('statusMessage');
+      el.classList.remove('hidden');
+      el.innerText = text;
+    }
+
+    function hideAllPanels() {
+      $('tableContainer').classList.add('hidden');
+      $('detailCard').classList.add('hidden');
+      $('formCard').classList.add('hidden');
+    }
+
+    // ---------- Search ----------
+    async function handleSearch() {
+      const query = $('searchInput').value.trim();
+      if (!query) {
+        alert('ကျေးဇူးပြု၍ ရှာဖွေလိုသော အချက်အလက် ရိုက်ထည့်ပါ');
+        return;
+      }
+
+      hideAllPanels();
+      setStatus('Searching data...');
+
+      try {
+        const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          setStatus('Error loading data: ' + (data.error || res.statusText));
+          return;
+        }
+
+        searchResultsData = data;
+
+        if (!data || data.length === 0) {
+          setStatus(`No records found for "${query}"`);
+          return;
+        }
+
+        setStatus(`Found ${data.length} record(s).`);
+        if (data.length === 1) {
+          showDetails(0);
+        } else {
+          renderTable(data);
+        }
+      } catch (err) {
+        setStatus('Connection error: ' + err.message);
+      }
+    }
+
+    // ---------- Table ----------
+    function renderTable(data) {
+      const tableBody = $('tableBody');
+      tableBody.innerHTML = '';
+
+      data.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.className = 'border-b hover:bg-gray-100 bg-white';
+        row.innerHTML = `
+          <td class="py-2 px-3">${index + 1}</td>
+          <td class="py-2 px-3 font-semibold text-blue-800">${item.account || '-'}</td>
+          <td class="py-2 px-3">${item.subscriberName || '-'}</td>
+          <td class="py-2 px-3">${item.branch || '-'}</td>
+          <td class="py-2 px-3">${item.partnerName || '-'}</td>
+          <td class="py-2 px-3 text-center">
+            <button class="bg-blue-600 text-white hover:bg-blue-700 text-xs px-3 py-1 rounded font-medium">View</button>
+          </td>
+        `;
+        row.querySelector('button').addEventListener('click', () => showDetails(index));
+        tableBody.appendChild(row);
+      });
+
+      $('tableContainer').classList.remove('hidden');
+    }
+
+    // ---------- Detail ----------
+    function showDetails(index) {
+      const item = searchResultsData[index];
+      currentItem = item;
+
+      const custPhoneHTML = item.customerPhone
+        ? `<a href="tel:${item.customerPhone}" class="text-blue-600 hover:underline font-semibold font-mono">📞 ${item.customerPhone}</a>`
+        : '-';
+
+      const techPhoneHTML = item.technicianPhone
+        ? `<a href="tel:${item.technicianPhone}" class="text-blue-600 hover:underline font-semibold font-mono">📞 ${item.technicianPhone}</a>`
+        : '-';
+
+      let mapLinkHTML = '-';
+      if (item.latLong) {
+        const cleanCoords = item.latLong.replace(/\s+/g, '');
+        mapLinkHTML = `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanCoords)}" target="_blank" class="text-blue-600 hover:underline font-medium">📍 ${item.latLong}</a>`;
+      }
+
+      $('detailContent').innerHTML = `
+        <div><strong>Account:</strong> ${item.account || '-'}</div>
+        <div><strong>Subscriber Name:</strong> ${item.subscriberName || '-'}</div>
+        <div><strong>Phone Number:</strong> ${custPhoneHTML}</div>
+        <div><strong>Station Code:</strong> ${item.stationCode || '-'}</div>
+        <div><strong>Branch:</strong> ${item.branch || '-'}</div>
+        <div><strong>Partner Name:</strong> ${item.partnerName || '-'}</div>
+
+        <div class="col-span-1 md:col-span-2 border-t border-blue-200 pt-3 mt-2 font-bold text-blue-900">Technical Info</div>
+        <div><strong>Device Code:</strong> ${item.deviceCode || '-'}</div>
+        <div><strong>Port on Card:</strong> ${item.portOnCard || '-'}</div>
+        <div><strong>Port Splitter:</strong> ${item.portSplitter || '-'}</div>
+        <div><strong>Subscriber Node:</strong> ${item.subscriberNode || '-'}</div>
+        <div><strong>Cable Length:</strong> ${item.cableLength ? item.cableLength + ' m' : '-'}</div>
+        <div><strong>ONT Serial:</strong> ${item.ontSerial || '-'}</div>
+        <div><strong>VMY Code:</strong> ${item.vmyCode || '-'}</div>
+        <div><strong>Technician Name:</strong> ${item.technicianName || '-'}</div>
+        <div><strong>Technical Phone:</strong> ${techPhoneHTML}</div>
+
+        <div class="col-span-1 md:col-span-2 border-t border-blue-200 pt-3 mt-2 font-bold text-blue-900">Customer Info</div>
+        <div><strong>Department:</strong> ${item.department || '-'}</div>
+        <div class="col-span-1 md:col-span-2"><strong>Address:</strong> ${item.address || '-'}</div>
+        <div class="col-span-1 md:col-span-2"><strong>Location (Map):</strong> ${mapLinkHTML}</div>
+      `;
+
+      $('tableContainer').classList.add('hidden');
+      $('formCard').classList.add('hidden');
+      $('detailCard').classList.remove('hidden');
+    }
+
+    // ---------- Add / Edit form ----------
+    const FIELDS = [
+      'account', 'subscriberName', 'customerPhone', 'stationCode', 'vmyCode',
+      'branch', 'partnerName', 'deviceCode', 'portOnCard', 'portSplitter',
+      'subscriberNode', 'cableLength', 'ontSerial', 'technicianName',
+      'technicianPhone', 'department', 'address', 'latLong'
+    ];
+
+    function showAddForm() {
+      currentItem = null;
+      $('formTitle').innerText = 'Add Subscriber';
+      $('f_id').value = '';
+      FIELDS.forEach((f) => ($('f_' + f).value = ''));
+      hideAllPanels();
+      $('formCard').classList.remove('hidden');
+    }
+
+    function editCurrent() {
+      if (!currentItem) return;
+      $('formTitle').innerText = 'Edit Subscriber';
+      $('f_id').value = currentItem._id;
+      FIELDS.forEach((f) => ($('f_' + f).value = currentItem[f] ?? ''));
+      hideAllPanels();
+      $('formCard').classList.remove('hidden');
+    }
+
+    function hideForm() {
+      hideAllPanels();
+      if (currentItem) $('detailCard').classList.remove('hidden');
+    }
+
+    async function saveCustomer(event) {
+      event.preventDefault();
+      const id = $('f_id').value;
+      const payload = {};
+      FIELDS.forEach((f) => {
+        const val = $('f_' + f).value;
+        payload[f] = f === 'cableLength' ? (val ? Number(val) : undefined) : (val || undefined);
+      });
+
+      try {
+        const res = await fetch(id ? `${API_BASE}/${id}` : API_BASE, {
+          method: id ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert('Save failed: ' + (data.error || res.statusText));
+          return;
+        }
+
+        currentItem = data;
+        searchResultsData = [data];
+        setStatus(id ? 'Record updated.' : 'Record created.');
+        hideAllPanels();
+        showDetails(0);
+      } catch (err) {
+        alert('Connection error: ' + err.message);
+      }
+    }
+
+    async function deleteCurrent() {
+      if (!currentItem) return;
+      if (!confirm(`Delete record for account "${currentItem.account}"? This cannot be undone.`)) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/${currentItem._id}`, { method: 'DELETE' });
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert('Delete failed: ' + (data.error || res.statusText));
+          return;
+        }
+
+        currentItem = null;
+        hideAllPanels();
+        setStatus('Record deleted.');
+      } catch (err) {
+        alert('Connection error: ' + err.message);
+      }
+    }
+  </script>
+</body>
+</html>
