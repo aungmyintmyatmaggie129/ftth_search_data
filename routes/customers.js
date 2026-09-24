@@ -13,9 +13,9 @@ router.get('/search', async (req, res) => {
     const results = await Customer.find({
       $or: [
         { account: regex },
-        { stationCode: regex },
-        { vmyCode: regex },
-        { customerPhone: regex }
+        { station_code: regex },
+        { VMY_Code: regex },
+        { customer_phone_number: regex }
       ]
     }).sort({ createdAt: -1 });
 

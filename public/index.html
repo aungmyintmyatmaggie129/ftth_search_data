@@ -167,9 +167,9 @@
         row.innerHTML = `
           <td class="py-2 px-3">${index + 1}</td>
           <td class="py-2 px-3 font-semibold text-blue-800">${item.account || '-'}</td>
-          <td class="py-2 px-3">${item.subscriberName || '-'}</td>
+          <td class="py-2 px-3">${item.subscriber_name || '-'}</td>
           <td class="py-2 px-3">${item.branch || '-'}</td>
-          <td class="py-2 px-3">${item.partnerName || '-'}</td>
+          <td class="py-2 px-3">${item.partner_name || '-'}</td>
           <td class="py-2 px-3 text-center">
             <button class="bg-blue-600 text-white hover:bg-blue-700 text-xs px-3 py-1 rounded font-medium">View</button>
           </td>
@@ -186,12 +186,12 @@
       const item = searchResultsData[index];
       currentItem = item;
 
-      const custPhoneHTML = item.customerPhone
-        ? `<a href="tel:${item.customerPhone}" class="text-blue-600 hover:underline font-semibold font-mono">📞 ${item.customerPhone}</a>`
+      const custPhoneHTML = item.custoemr_phone_number
+        ? `<a href="tel:${item.custoemr_phone_number}" class="text-blue-600 hover:underline font-semibold font-mono">📞 ${item.custoemr_phone_number}</a>`
         : '-';
 
-      const techPhoneHTML = item.technicianPhone
-        ? `<a href="tel:${item.technicianPhone}" class="text-blue-600 hover:underline font-semibold font-mono">📞 ${item.technicianPhone}</a>`
+      const techPhoneHTML = item.technical_Phone_Number
+        ? `<a href="tel:${item.technical_Phone_Number}" class="text-blue-600 hover:underline font-semibold font-mono">📞 ${item.technical_Phone_Number}</a>`
         : '-';
 
       let mapLinkHTML = '-';
@@ -202,21 +202,21 @@
 
       $('detailContent').innerHTML = `
         <div><strong>Account:</strong> ${item.account || '-'}</div>
-        <div><strong>Subscriber Name:</strong> ${item.subscriberName || '-'}</div>
+        <div><strong>Subscriber Name:</strong> ${item.subscriber_name || '-'}</div>
         <div><strong>Phone Number:</strong> ${custPhoneHTML}</div>
-        <div><strong>Station Code:</strong> ${item.stationCode || '-'}</div>
+        <div><strong>Station Code:</strong> ${item.station_code || '-'}</div>
         <div><strong>Branch:</strong> ${item.branch || '-'}</div>
-        <div><strong>Partner Name:</strong> ${item.partnerName || '-'}</div>
+        <div><strong>Partner Name:</strong> ${item.partner_name || '-'}</div>
 
         <div class="col-span-1 md:col-span-2 border-t border-blue-200 pt-3 mt-2 font-bold text-blue-900">Technical Info</div>
-        <div><strong>Device Code:</strong> ${item.deviceCode || '-'}</div>
-        <div><strong>Port on Card:</strong> ${item.portOnCard || '-'}</div>
-        <div><strong>Port Splitter:</strong> ${item.portSplitter || '-'}</div>
-        <div><strong>Subscriber Node:</strong> ${item.subscriberNode || '-'}</div>
-        <div><strong>Cable Length:</strong> ${item.cableLength ? item.cableLength + ' m' : '-'}</div>
-        <div><strong>ONT Serial:</strong> ${item.ontSerial || '-'}</div>
-        <div><strong>VMY Code:</strong> ${item.vmyCode || '-'}</div>
-        <div><strong>Technician Name:</strong> ${item.technicianName || '-'}</div>
+        <div><strong>Device Code:</strong> ${item.device_code || '-'}</div>
+        <div><strong>Port on Card:</strong> ${item.port_on_card || '-'}</div>
+        <div><strong>Port Splitter:</strong> ${item.port_splitter || '-'}</div>
+        <div><strong>Subscriber Node:</strong> ${item.subscriber_node || '-'}</div>
+        <div><strong>Cable Length:</strong> ${item.cable_length ? item.cable_length + ' m' : '-'}</div>
+        <div><strong>ONT Serial:</strong> ${item.ont_serial || '-'}</div>
+        <div><strong>VMY Code:</strong> ${item.VMY_Code || '-'}</div>
+        <div><strong>Technician Name:</strong> ${item.technical_name || '-'}</div>
         <div><strong>Technical Phone:</strong> ${techPhoneHTML}</div>
 
         <div class="col-span-1 md:col-span-2 border-t border-blue-200 pt-3 mt-2 font-bold text-blue-900">Customer Info</div>
@@ -232,10 +232,10 @@
 
     // ---------- Add / Edit form ----------
     const FIELDS = [
-      'account', 'subscriberName', 'customerPhone', 'stationCode', 'vmyCode',
-      'branch', 'partnerName', 'deviceCode', 'portOnCard', 'portSplitter',
-      'subscriberNode', 'cableLength', 'ontSerial', 'technicianName',
-      'technicianPhone', 'department', 'address', 'latLong'
+      'account', 'subscriber_name', 'customer_phone_number', 'station_code', 'VMY_Code',
+      'branch', 'partner_name', 'device_code', 'port_on_card', 'port_splitter',
+      'subscriber_node', 'cable_length', 'ont_serial', 'technical_name',
+      'technical_Phone_Number', 'department', 'address', 'latLong'
     ];
 
     function showAddForm() {
